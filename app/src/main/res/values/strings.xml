@@ -20,5 +20,15 @@
     
     <string name="hint_ingredient_name">Ingredient Name (e.g. Tomato)</string>
     <string name="hint_ingredient_quantity">Quantity (e.g. 2)</string>
-    <string name="hint_ingredient_unit">Unit (e.g. pieces, grams, ml)</string>
+    <string name="hint_expiry_date">Expiry Date (dd/mm/yyyy)</string>
+    
+    <string name="switch_dark_mode">Dark Mode</string>
+    
+    <string-array name="metric_units">
+        <item>g</item>
+        <item>kg</item>
+        <item>ml</item>
+        <item>L</item>
+        <item>pieces</item>
+    </string-array>
 </resources>

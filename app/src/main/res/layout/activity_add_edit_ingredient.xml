@@ -23,21 +23,51 @@
         android:inputType="text"
         android:layout_marginBottom="16dp" />
 
-    <EditText
-        android:id="@+id/etIngredientQuantity"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_ingredient_quantity"
-        android:inputType="numberDecimal"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
 
-    <EditText
-        android:id="@+id/etIngredientUnit"
+        <EditText
+            android:id="@+id/etIngredientQuantity"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/hint_ingredient_quantity"
+            android:inputType="numberDecimal"
+            android:layout_marginEnd="16dp" />
+
+        <Spinner
+            android:id="@+id/spnIngredientUnit"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:entries="@array/metric_units" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_ingredient_unit"
-        android:inputType="text"
-        android:layout_marginBottom="24dp" />
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp">
+        
+        <EditText
+            android:id="@+id/etExpiryDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/hint_expiry_date"
+            android:inputType="date" />
+            
+        <ImageButton
+            android:id="@+id/btnPickDate"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_my_calendar"
+            android:contentDescription="Select Date" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
