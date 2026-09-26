@@ -8,6 +8,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +28,9 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     private ImageButton btnPickDate;
     private Button btnSaveIngredient;
     private Button btnCancel;
+    private TextView tvAddEditTitle;
+    
+    private String editingId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,34 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         btnPickDate = findViewById(R.id.btnPickDate);
         btnSaveIngredient = findViewById(R.id.btnSaveIngredient);
         btnCancel = findViewById(R.id.btnCancel);
+        tvAddEditTitle = findViewById(R.id.tvAddEditTitle);
+
+        if (getIntent() != null && getIntent().hasExtra("EXTRA_INGREDIENT_ID")) {
+            editingId = getIntent().getStringExtra("EXTRA_INGREDIENT_ID");
+            Ingredient ingredient = IngredientManager.getInstance().getIngredientById(editingId);
+            if (ingredient != null) {
+                tvAddEditTitle.setText("Edit Ingredient");
+                etIngredientName.setText(ingredient.getOriginalName());
+                
+                String qtyStr = String.valueOf(ingredient.getQuantity());
+                if (qtyStr.endsWith(".0")) {
+                    qtyStr = qtyStr.substring(0, qtyStr.length() - 2);
+                }
+                etIngredientQuantity.setText(qtyStr);
+                
+                if (ingredient.getExpiryDate() != null) {
+                    etExpiryDate.setText(ingredient.getExpiryDate());
+                }
+                
+                String[] units = getResources().getStringArray(R.array.metric_units);
+                for (int i = 0; i < units.length; i++) {
+                    if (units[i].equals(ingredient.getUnit())) {
+                        spnIngredientUnit.setSelection(i);
+                        break;
+                    }
+                }
+            }
+        }
 
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +109,41 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         btnSaveIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String name = etIngredientName.getText().toString().trim();
+                String qtyString = etIngredientQuantity.getText().toString().trim();
+                String expiry = etExpiryDate.getText().toString().trim();
+
+                if (name.isEmpty()) {
+                    Toast.makeText(AddEditIngredientActivity.this, "Ingredient name cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (qtyString.isEmpty()) {
+                    Toast.makeText(AddEditIngredientActivity.this, "Quantity cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                double quantity = 0;
+                try {
+                    quantity = Double.parseDouble(qtyString);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(AddEditIngredientActivity.this, "Invalid quantity", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (quantity <= 0) {
+                    Toast.makeText(AddEditIngredientActivity.this, "Quantity must be greater than 0", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String unit = spnIngredientUnit.getSelectedItem().toString();
+
+                if (editingId != null) {
+                    IngredientManager.getInstance().updateIngredient(editingId, name, quantity, unit, expiry);
+                } else {
+                    IngredientManager.getInstance().addOrUpdateIngredient(name, quantity, unit, expiry);
+                }
+                
                 finish();
             }
         });
