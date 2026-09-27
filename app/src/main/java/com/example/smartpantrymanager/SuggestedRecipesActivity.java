@@ -52,8 +52,8 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         
-        List<Ingredient> pantry = IngredientManager.getInstance().getPantryList();
-        List<Recipe> matchedRecipes = RecipeManager.getInstance().getMatchedRecipes(pantry);
+        List<Ingredient> pantry = IngredientManager.getInstance(this).getPantryList();
+        List<Recipe> matchedRecipes = RecipeManager.getInstance(this).getMatchedRecipes(pantry);
 
         if (matchedRecipes.isEmpty()) {
             tvNoRecipes.setVisibility(View.VISIBLE);

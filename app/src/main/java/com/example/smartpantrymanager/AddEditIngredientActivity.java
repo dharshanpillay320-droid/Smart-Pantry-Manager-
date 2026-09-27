@@ -54,7 +54,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         if (getIntent() != null && getIntent().hasExtra("EXTRA_INGREDIENT_ID")) {
             editingId = getIntent().getStringExtra("EXTRA_INGREDIENT_ID");
-            Ingredient ingredient = IngredientManager.getInstance().getIngredientById(editingId);
+            Ingredient ingredient = IngredientManager.getInstance(this).getIngredientById(editingId);
             if (ingredient != null) {
                 tvAddEditTitle.setText("Edit Ingredient");
                 etIngredientName.setText(ingredient.getOriginalName());
@@ -139,9 +139,9 @@ public class AddEditIngredientActivity extends AppCompatActivity {
                 String unit = spnIngredientUnit.getSelectedItem().toString();
 
                 if (editingId != null) {
-                    IngredientManager.getInstance().updateIngredient(editingId, name, quantity, unit, expiry);
+                    IngredientManager.getInstance(AddEditIngredientActivity.this).updateIngredient(editingId, name, quantity, unit, expiry);
                 } else {
-                    IngredientManager.getInstance().addOrUpdateIngredient(name, quantity, unit, expiry);
+                    IngredientManager.getInstance(AddEditIngredientActivity.this).addOrUpdateIngredient(name, quantity, unit, expiry);
                 }
                 
                 finish();

@@ -36,7 +36,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         if (getIntent() != null && getIntent().hasExtra("EXTRA_RECIPE_ID")) {
             String recipeId = getIntent().getStringExtra("EXTRA_RECIPE_ID");
-            Recipe recipe = RecipeManager.getInstance().getRecipeById(recipeId);
+            Recipe recipe = RecipeManager.getInstance(this).getRecipeById(recipeId);
             
             if (recipe != null) {
                 tvRecipeDetailName.setText(recipe.getTitle());

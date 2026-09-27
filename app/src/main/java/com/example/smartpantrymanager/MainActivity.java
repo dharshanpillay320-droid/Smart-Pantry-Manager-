@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
         rvPantry.setLayoutManager(new LinearLayoutManager(this));
         
-        List<Ingredient> currentList = IngredientManager.getInstance().getPantryList();
+        List<Ingredient> currentList = IngredientManager.getInstance(this).getPantryList();
         adapter = new IngredientAdapter(currentList, new IngredientAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Ingredient ingredient) {
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("EXTRA_INGREDIENT_ID", ingredient.getId());
                     startActivity(intent);
                 } else if (which == 1) {
-                    IngredientManager.getInstance().deleteIngredient(ingredient.getId());
+                    IngredientManager.getInstance(MainActivity.this).deleteIngredient(ingredient.getId());
                     onResume();
                 }
             }
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        List<Ingredient> currentList = IngredientManager.getInstance().getPantryList();
+        List<Ingredient> currentList = IngredientManager.getInstance(this).getPantryList();
         adapter.updateData(currentList);
         
         if (currentList.isEmpty()) {

@@ -1,5 +1,10 @@
 package com.example.smartpantrymanager;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,55 +15,100 @@ import java.util.UUID;
 public class IngredientManager {
 
     private static IngredientManager instance;
-    private List<Ingredient> pantryList;
+    private DatabaseHelper dbHelper;
 
-    private IngredientManager() {
-        pantryList = new ArrayList<>();
+    private IngredientManager(Context context) {
+        dbHelper = new DatabaseHelper(context.getApplicationContext());
     }
 
-    public static IngredientManager getInstance() {
+    public static IngredientManager getInstance(Context context) {
         if (instance == null) {
-            instance = new IngredientManager();
+            instance = new IngredientManager(context);
         }
         return instance;
     }
 
     public List<Ingredient> getPantryList() {
-        return pantryList;
+        List<Ingredient> list = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_INGREDIENTS, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String id = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_ID));
+                String oName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_ORIGINAL_NAME));
+                String nName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_NORMALIZED_NAME));
+                double qty = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_QUANTITY));
+                String unit = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_UNIT));
+                String exp = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_EXPIRY));
+
+                list.add(new Ingredient(id, oName, nName, qty, unit, exp));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
     }
 
     public void addOrUpdateIngredient(String name, double quantity, String unit, String expiryDate) {
         String normalized = normalizeName(name);
+        List<Ingredient> pantryList = getPantryList();
 
         for (Ingredient ingredient : pantryList) {
             if (ingredient.getNormalizedName().equals(normalized)) {
                 aggregateQuantity(ingredient, quantity, unit);
                 updateToEarliestExpiry(ingredient, expiryDate);
                 normalizeUnits(ingredient);
+                saveIngredientToDb(ingredient);
                 return;
             }
         }
 
         Ingredient newIngredient = new Ingredient(UUID.randomUUID().toString(), name, normalized, quantity, unit, expiryDate);
         normalizeUnits(newIngredient);
-        pantryList.add(newIngredient);
+        insertIngredientToDb(newIngredient);
+    }
+
+    private void insertIngredientToDb(Ingredient ingredient) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COL_ING_ID, ingredient.getId());
+        values.put(DatabaseHelper.COL_ING_ORIGINAL_NAME, ingredient.getOriginalName());
+        values.put(DatabaseHelper.COL_ING_NORMALIZED_NAME, ingredient.getNormalizedName());
+        values.put(DatabaseHelper.COL_ING_QUANTITY, ingredient.getQuantity());
+        values.put(DatabaseHelper.COL_ING_UNIT, ingredient.getUnit());
+        values.put(DatabaseHelper.COL_ING_EXPIRY, ingredient.getExpiryDate());
+        db.insert(DatabaseHelper.TABLE_INGREDIENTS, null, values);
+    }
+
+    private void saveIngredientToDb(Ingredient ingredient) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COL_ING_ORIGINAL_NAME, ingredient.getOriginalName());
+        values.put(DatabaseHelper.COL_ING_NORMALIZED_NAME, ingredient.getNormalizedName());
+        values.put(DatabaseHelper.COL_ING_QUANTITY, ingredient.getQuantity());
+        values.put(DatabaseHelper.COL_ING_UNIT, ingredient.getUnit());
+        values.put(DatabaseHelper.COL_ING_EXPIRY, ingredient.getExpiryDate());
+        db.update(DatabaseHelper.TABLE_INGREDIENTS, values, DatabaseHelper.COL_ING_ID + "=?", new String[]{ingredient.getId()});
     }
 
     public void deleteIngredient(String id) {
-        for (int i = 0; i < pantryList.size(); i++) {
-            if (pantryList.get(i).getId().equals(id)) {
-                pantryList.remove(i);
-                return;
-            }
-        }
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete(DatabaseHelper.TABLE_INGREDIENTS, DatabaseHelper.COL_ING_ID + "=?", new String[]{id});
     }
 
     public Ingredient getIngredientById(String id) {
-        for (Ingredient ingredient : pantryList) {
-            if (ingredient.getId().equals(id)) {
-                return ingredient;
-            }
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(DatabaseHelper.TABLE_INGREDIENTS, null, DatabaseHelper.COL_ING_ID + "=?", new String[]{id}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            String oName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_ORIGINAL_NAME));
+            String nName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_NORMALIZED_NAME));
+            double qty = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_QUANTITY));
+            String unit = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_UNIT));
+            String exp = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_ING_EXPIRY));
+            cursor.close();
+            return new Ingredient(id, oName, nName, qty, unit, exp);
         }
+        if (cursor != null) cursor.close();
         return null;
     }
 
@@ -88,33 +138,25 @@ public class IngredientManager {
 
     private void updateToEarliestExpiry(Ingredient existing, String addExpiryDate) {
         String currentExpiry = existing.getExpiryDate();
-        
-        if (addExpiryDate == null || addExpiryDate.trim().isEmpty()) {
-            return;
-        }
-        
+        if (addExpiryDate == null || addExpiryDate.trim().isEmpty()) return;
         if (currentExpiry == null || currentExpiry.trim().isEmpty()) {
             existing.setExpiryDate(addExpiryDate);
             return;
         }
-        
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             Date currentDate = sdf.parse(currentExpiry);
             Date addDate = sdf.parse(addExpiryDate);
-            
             if (addDate != null && currentDate != null && addDate.before(currentDate)) {
                 existing.setExpiryDate(addExpiryDate);
             }
         } catch (ParseException e) {
-            
         }
     }
 
     private void normalizeUnits(Ingredient ingredient) {
         double qty = ingredient.getQuantity();
         String unit = ingredient.getUnit();
-
         if (unit.equals("g") && qty >= 1000) {
             ingredient.setQuantity(qty / 1000.0);
             ingredient.setUnit("kg");
@@ -131,16 +173,10 @@ public class IngredientManager {
     }
 
     public String normalizeName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            return "";
-        }
+        if (name == null || name.trim().isEmpty()) return "";
         String lower = name.trim().toLowerCase();
-        
-        if (lower.endsWith("oes")) {
-            return lower.substring(0, lower.length() - 2);
-        } else if (lower.endsWith("s") && !lower.endsWith("ss")) {
-            return lower.substring(0, lower.length() - 1);
-        }
+        if (lower.endsWith("oes")) return lower.substring(0, lower.length() - 2);
+        else if (lower.endsWith("s") && !lower.endsWith("ss")) return lower.substring(0, lower.length() - 1);
         return lower;
     }
 }
