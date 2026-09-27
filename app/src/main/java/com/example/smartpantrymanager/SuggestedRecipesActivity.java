@@ -14,11 +14,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 public class SuggestedRecipesActivity extends AppCompatActivity {
 
     private RecyclerView rvSuggestedRecipes;
     private TextView tvNoRecipes;
     private Button btnBackToPantry;
+    private RecipeAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +48,29 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
         });
     }
 
-    public void openRecipeDetail(String recipeName, String ingredients, String steps) {
-        Intent intent = new Intent(this, RecipeDetailActivity.class);
-        intent.putExtra("EXTRA_RECIPE_NAME", recipeName);
-        intent.putExtra("EXTRA_RECIPE_INGREDIENTS", ingredients);
-        intent.putExtra("EXTRA_RECIPE_STEPS", steps);
-        startActivity(intent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        
+        List<Ingredient> pantry = IngredientManager.getInstance().getPantryList();
+        List<Recipe> matchedRecipes = RecipeManager.getInstance().getMatchedRecipes(pantry);
+
+        if (matchedRecipes.isEmpty()) {
+            tvNoRecipes.setVisibility(View.VISIBLE);
+            rvSuggestedRecipes.setVisibility(View.GONE);
+        } else {
+            tvNoRecipes.setVisibility(View.GONE);
+            rvSuggestedRecipes.setVisibility(View.VISIBLE);
+            
+            adapter = new RecipeAdapter(matchedRecipes, new RecipeAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(Recipe recipe) {
+                    Intent intent = new Intent(SuggestedRecipesActivity.this, RecipeDetailActivity.class);
+                    intent.putExtra("EXTRA_RECIPE_ID", recipe.getId());
+                    startActivity(intent);
+                }
+            });
+            rvSuggestedRecipes.setAdapter(adapter);
+        }
     }
 }

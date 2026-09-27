@@ -34,14 +34,32 @@ public class RecipeDetailActivity extends AppCompatActivity {
         tvRecipeDetailSteps = findViewById(R.id.tvRecipeDetailSteps);
         btnBackFromDetail = findViewById(R.id.btnBackFromDetail);
 
-        if (getIntent() != null) {
-            String name = getIntent().getStringExtra("EXTRA_RECIPE_NAME");
-            String ingredients = getIntent().getStringExtra("EXTRA_RECIPE_INGREDIENTS");
-            String steps = getIntent().getStringExtra("EXTRA_RECIPE_STEPS");
-
-            if (name != null) tvRecipeDetailName.setText(name);
-            if (ingredients != null) tvRecipeDetailIngredients.setText(ingredients);
-            if (steps != null) tvRecipeDetailSteps.setText(steps);
+        if (getIntent() != null && getIntent().hasExtra("EXTRA_RECIPE_ID")) {
+            String recipeId = getIntent().getStringExtra("EXTRA_RECIPE_ID");
+            Recipe recipe = RecipeManager.getInstance().getRecipeById(recipeId);
+            
+            if (recipe != null) {
+                tvRecipeDetailName.setText(recipe.getTitle());
+                tvRecipeDetailSteps.setText(recipe.getInstructions());
+                
+                StringBuilder ingredientsBuilder = new StringBuilder();
+                for (RecipeIngredient ri : recipe.getRequiredIngredients()) {
+                    
+                    String qtyStr = String.valueOf(ri.getQuantity());
+                    if (qtyStr.endsWith(".0")) {
+                        qtyStr = qtyStr.substring(0, qtyStr.length() - 2);
+                    }
+                    
+                    ingredientsBuilder.append("- ")
+                                      .append(ri.getName())
+                                      .append(" (")
+                                      .append(qtyStr)
+                                      .append(" ")
+                                      .append(ri.getUnit())
+                                      .append(")\n");
+                }
+                tvRecipeDetailIngredients.setText(ingredientsBuilder.toString().trim());
+            }
         }
 
         btnBackFromDetail.setOnClickListener(new View.OnClickListener() {
