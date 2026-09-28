@@ -40,77 +40,58 @@ public class RecipeManager {
     }
 
     private void seedDatabase() {
-        // We will add 15 recipes as requested.
-        addRecipe("Tomato Soup", "A warm and hearty tomato soup.", "1. Chop tomatoes and onions.\n2. Boil until soft.\n3. Blend until smooth.", 
+        addRecipe("Tomato Soup", "A warm and hearty tomato soup.", "1. Chop tomatoes and onions.\n2. Boil until soft.\n3. Blend until smooth.\n4. Salt to taste.", 
             new RecipeIngredient("Tomato", 500, "g"), 
             new RecipeIngredient("Onion", 1, "pieces"));
 
-        addRecipe("Simple Pasta", "Quick tomato pasta.", "1. Boil pasta.\n2. Make tomato sauce.\n3. Mix and serve.", 
-            new RecipeIngredient("Pasta", 250, "g"), 
-            new RecipeIngredient("Tomato", 200, "g"));
-
-        addRecipe("Fluffy Omelette", "A simple and quick breakfast.", "1. Whisk eggs and milk.\n2. Fry in a pan until golden.", 
+        addRecipe("Fluffy Omelette", "A simple and quick breakfast.", "1. Whisk eggs and milk.\n2. Fry in a pan until golden.\n3. Salt to taste.", 
             new RecipeIngredient("Egg", 3, "pieces"), 
             new RecipeIngredient("Milk", 50, "ml"));
 
-        addRecipe("Chicken Salad", "Healthy grilled chicken salad.", "1. Grill chicken.\n2. Chop lettuce and tomatoes.\n3. Mix everything.", 
-            new RecipeIngredient("Chicken", 200, "g"), 
-            new RecipeIngredient("Lettuce", 100, "g"), 
-            new RecipeIngredient("Tomato", 100, "g"));
-
-        addRecipe("Pancakes", "Classic sweet pancakes.", "1. Mix flour, milk, and eggs.\n2. Pour batter onto hot pan.\n3. Flip when bubbly.", 
+        addRecipe("Pancakes", "Classic sweet pancakes.", "1. Mix flour, milk, eggs, and sugar.\n2. Pour batter onto hot pan.\n3. Flip when bubbly.", 
             new RecipeIngredient("Flour", 200, "g"), 
             new RecipeIngredient("Milk", 250, "ml"), 
-            new RecipeIngredient("Egg", 2, "pieces"));
+            new RecipeIngredient("Egg", 2, "pieces"),
+            new RecipeIngredient("Sugar", 30, "g"));
 
-        addRecipe("Beef Stew", "Rich and slow-cooked beef stew.", "1. Brown beef chunks.\n2. Add potatoes and carrots.\n3. Simmer for 2 hours.", 
-            new RecipeIngredient("Beef", 500, "g"), 
-            new RecipeIngredient("Potato", 300, "g"), 
-            new RecipeIngredient("Carrot", 200, "g"));
-
-        addRecipe("Mashed Potatoes", "Creamy side dish.", "1. Boil potatoes until soft.\n2. Mash with butter and milk.", 
-            new RecipeIngredient("Potato", 500, "g"), 
-            new RecipeIngredient("Butter", 50, "g"), 
-            new RecipeIngredient("Milk", 100, "ml"));
-
-        addRecipe("Grilled Cheese", "Crispy and gooey sandwich.", "1. Butter bread.\n2. Add cheese.\n3. Grill until melted.", 
+        addRecipe("Grilled Cheese", "Crispy and gooey sandwich.", "1. Place cheese between bread.\n2. Grill until melted.", 
             new RecipeIngredient("Bread", 2, "pieces"), 
-            new RecipeIngredient("Cheese", 50, "g"), 
-            new RecipeIngredient("Butter", 15, "g"));
+            new RecipeIngredient("Cheese", 50, "g"));
 
-        addRecipe("Oatmeal", "Warm breakfast oats.", "1. Boil milk.\n2. Stir in oats.\n3. Cook until thick.", 
-            new RecipeIngredient("Oats", 50, "g"), 
-            new RecipeIngredient("Milk", 200, "ml"));
+        addRecipe("Scrambled Eggs", "Soft and creamy eggs.", "1. Whisk eggs with a splash of milk.\n2. Cook slowly in a pan.\n3. Salt to taste.", 
+            new RecipeIngredient("Egg", 4, "pieces"), 
+            new RecipeIngredient("Milk", 30, "ml"));
 
         addRecipe("Lemonade", "Refreshing summer drink.", "1. Squeeze lemons.\n2. Mix with water and sugar.", 
             new RecipeIngredient("Lemon", 3, "pieces"), 
-            new RecipeIngredient("Sugar", 100, "g"), 
-            new RecipeIngredient("Water", 1, "L"));
+            new RecipeIngredient("Sugar", 100, "g"));
 
-        addRecipe("Fried Rice", "Quick egg fried rice.", "1. Fry eggs.\n2. Add cooked rice and soy sauce.\n3. Stir fry.", 
-            new RecipeIngredient("Rice", 200, "g"), 
+        addRecipe("French Toast", "Sweet fried bread.", "1. Dip bread in whisked egg and milk.\n2. Fry until golden.", 
+            new RecipeIngredient("Bread", 2, "pieces"), 
             new RecipeIngredient("Egg", 2, "pieces"), 
-            new RecipeIngredient("Soy Sauce", 30, "ml"));
+            new RecipeIngredient("Milk", 50, "ml"));
 
-        addRecipe("Garlic Bread", "Crispy oven-baked garlic bread.", "1. Crush garlic into butter.\n2. Spread on bread.\n3. Bake until crispy.", 
-            new RecipeIngredient("Bread", 4, "pieces"), 
-            new RecipeIngredient("Butter", 40, "g"), 
-            new RecipeIngredient("Garlic", 2, "pieces"));
+        addRecipe("Cheese Omelette", "Classic cheesy omelette.", "1. Whisk eggs and pour into pan.\n2. Add cheese and fold.\n3. Salt to taste.", 
+            new RecipeIngredient("Egg", 3, "pieces"), 
+            new RecipeIngredient("Cheese", 30, "g"));
 
-        addRecipe("Fruit Smoothie", "Blended fruit drink.", "1. Chop fruit.\n2. Blend with milk and yogurt.", 
-            new RecipeIngredient("Banana", 1, "pieces"), 
-            new RecipeIngredient("Milk", 200, "ml"), 
-            new RecipeIngredient("Yogurt", 100, "g"));
+        addRecipe("Tomato & Cheese Sandwich", "Fresh and quick sandwich.", "1. Slice tomato and cheese.\n2. Place between bread.\n3. Salt to taste.", 
+            new RecipeIngredient("Bread", 2, "pieces"), 
+            new RecipeIngredient("Tomato", 100, "g"), 
+            new RecipeIngredient("Cheese", 40, "g"));
 
-        addRecipe("Scrambled Eggs", "Soft and creamy eggs.", "1. Whisk eggs with a splash of milk.\n2. Cook slowly in a buttered pan.", 
-            new RecipeIngredient("Egg", 4, "pieces"), 
-            new RecipeIngredient("Butter", 20, "g"), 
-            new RecipeIngredient("Milk", 30, "ml"));
+        addRecipe("Simple Flatbread", "Quick stovetop bread.", "1. Mix flour and milk into dough.\n2. Roll flat and fry in pan.\n3. Salt to taste.", 
+            new RecipeIngredient("Flour", 200, "g"), 
+            new RecipeIngredient("Milk", 100, "ml"));
 
-        addRecipe("Vegetable Stir Fry", "Quick healthy veggies.", "1. Chop broccoli and carrots.\n2. Stir fry with soy sauce.", 
-            new RecipeIngredient("Broccoli", 200, "g"), 
-            new RecipeIngredient("Carrot", 150, "g"), 
-            new RecipeIngredient("Soy Sauce", 40, "ml"));
+        addRecipe("Onion Rings", "Crispy fried onions.", "1. Slice onions into rings.\n2. Dip in milk and flour.\n3. Fry until crispy.\n4. Salt to taste.", 
+            new RecipeIngredient("Onion", 2, "pieces"), 
+            new RecipeIngredient("Flour", 100, "g"), 
+            new RecipeIngredient("Milk", 100, "ml"));
+
+        addRecipe("Tomato & Onion Salad", "Fresh side salad.", "1. Chop tomato and onion.\n2. Toss together.\n3. Salt to taste.", 
+            new RecipeIngredient("Tomato", 200, "g"), 
+            new RecipeIngredient("Onion", 1, "pieces"));
     }
 
     private void addRecipe(String title, String desc, String instr, RecipeIngredient... ingredients) {
@@ -180,6 +161,17 @@ public class RecipeManager {
         return matched;
     }
 
+    public List<Recipe> getAlmostThereRecipes(List<Ingredient> pantry) {
+        List<Recipe> all = getAllRecipes();
+        List<Recipe> almostThere = new ArrayList<>();
+        for (Recipe recipe : all) {
+            if (isAlmostThere(recipe, pantry)) {
+                almostThere.add(recipe);
+            }
+        }
+        return almostThere;
+    }
+
     public Recipe getRecipeById(String id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_RECIPES + " WHERE " + DatabaseHelper.COL_REC_ID + "=?", new String[]{id});
@@ -214,6 +206,28 @@ public class RecipeManager {
             }
         }
         return true; 
+    }
+
+    private boolean isAlmostThere(Recipe recipe, List<Ingredient> pantry) {
+        int missingCount = 0;
+        for (RecipeIngredient required : recipe.getRequiredIngredients()) {
+            boolean found = false;
+            String normalizedRequiredName = IngredientManager.getInstance(context).normalizeName(required.getName());
+
+            for (Ingredient pantryItem : pantry) {
+                if (pantryItem.getNormalizedName().equals(normalizedRequiredName)) {
+                    if (hasSufficientQuantity(required, pantryItem)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found) {
+                missingCount++;
+            }
+        }
+        return missingCount == 1; 
     }
 
     private boolean hasSufficientQuantity(RecipeIngredient required, Ingredient pantryItem) {
