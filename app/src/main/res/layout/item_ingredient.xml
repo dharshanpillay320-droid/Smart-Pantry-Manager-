@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Root layout structure containing individual ingredient details -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,6 +9,7 @@
     android:background="?android:attr/selectableItemBackground"
     android:elevation="2dp">
 
+    <!-- Primary text display for the ingredient's original name -->
     <TextView
         android:id="@+id/tvItemName"
         android:layout_width="match_parent"
@@ -15,18 +17,21 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- Sub-layout to horizontally align quantity and expiry data -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="4dp">
 
+        <!-- Text display for the numeric quantity and measurement unit -->
         <TextView
             android:id="@+id/tvItemQuantity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp" />
 
+        <!-- Text display for the expiration date, pushed to the trailing edge -->
         <TextView
             android:id="@+id/tvItemExpiry"
             android:layout_width="0dp"

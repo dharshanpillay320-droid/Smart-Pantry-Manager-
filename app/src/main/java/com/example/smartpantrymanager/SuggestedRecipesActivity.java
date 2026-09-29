@@ -38,6 +38,8 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Setup screen layout
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_suggested_recipes);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -46,14 +48,17 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Link UI elements
         rvSuggestedRecipes = findViewById(R.id.rvSuggestedRecipes);
         tvNoRecipes = findViewById(R.id.tvNoRecipes);
         llAlmostThere = findViewById(R.id.llAlmostThere);
         spnAlmostThere = findViewById(R.id.spnAlmostThere);
         btnBackToPantry = findViewById(R.id.btnBackToPantry);
 
+        // Configure RecyclerView
         rvSuggestedRecipes.setLayoutManager(new LinearLayoutManager(this));
 
+        // Handle back navigation
         btnBackToPantry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +66,7 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
             }
         });
         
+        // Setup adapter for matched recipes
         matchedRecipes = new ArrayList<>();
         adapter = new RecipeAdapter(matchedRecipes, new RecipeAdapter.OnItemClickListener() {
             @Override
@@ -70,6 +76,7 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
         });
         rvSuggestedRecipes.setAdapter(adapter);
 
+        // Handle selection of 'almost there' recipes
         spnAlmostThere.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -91,7 +98,9 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
         });
     }
 
+    // Opens the details view for a selected recipe
     private void openRecipe(String recipeId) {
+        // Triggers navigation to the RecipeDetailActivity for a selected recipe
         Intent intent = new Intent(SuggestedRecipesActivity.this, RecipeDetailActivity.class);
         intent.putExtra("EXTRA_RECIPE_ID", recipeId);
         startActivity(intent);
@@ -101,13 +110,16 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         
+        // Fetch current pantry items
         List<Ingredient> pantry = IngredientManager.getInstance(this).getPantryList();
         
+        // Update matched recipes list
         List<Recipe> newMatched = RecipeManager.getInstance(this).getMatchedRecipes(pantry);
         matchedRecipes.clear();
         matchedRecipes.addAll(newMatched);
         adapter.notifyDataSetChanged();
         
+        // Toggle visibility based on matched results
         if (matchedRecipes.isEmpty()) {
             tvNoRecipes.setVisibility(View.VISIBLE);
             rvSuggestedRecipes.setVisibility(View.GONE);
@@ -116,8 +128,10 @@ public class SuggestedRecipesActivity extends AppCompatActivity {
             rvSuggestedRecipes.setVisibility(View.VISIBLE);
         }
 
+        // Fetch recipes missing one ingredient
         almostThereRecipes = RecipeManager.getInstance(this).getAlmostThereRecipes(pantry);
 
+        // Update 'almost there' spinner visibility and items
         if (almostThereRecipes.isEmpty()) {
             llAlmostThere.setVisibility(View.GONE);
         } else {

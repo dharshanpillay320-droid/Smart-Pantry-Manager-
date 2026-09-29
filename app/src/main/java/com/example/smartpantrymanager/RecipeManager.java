@@ -14,6 +14,7 @@ public class RecipeManager {
     private DatabaseHelper dbHelper;
     private Context context;
 
+    // Initializes the singleton and seeds the database if necessary
     private RecipeManager(Context context) {
         this.context = context.getApplicationContext();
         dbHelper = new DatabaseHelper(this.context);
@@ -27,6 +28,7 @@ public class RecipeManager {
         return instance;
     }
 
+    // Checks for existing recipes and triggers seeding if empty
     private void checkAndSeedRecipes() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT count(*) FROM " + DatabaseHelper.TABLE_RECIPES, null);
@@ -39,6 +41,7 @@ public class RecipeManager {
         }
     }
 
+    // Populates the database with default core recipes
     private void seedDatabase() {
         addRecipe("Tomato Soup", "A warm and hearty tomato soup.", "1. Chop tomatoes and onions.\n2. Boil until soft.\n3. Blend until smooth.\n4. Salt to taste.", 
             new RecipeIngredient("Tomato", 500, "g"), 
@@ -94,6 +97,7 @@ public class RecipeManager {
             new RecipeIngredient("Onion", 1, "pieces"));
     }
 
+    // Inserts a new recipe and its child ingredients into the relational tables
     private void addRecipe(String title, String desc, String instr, RecipeIngredient... ingredients) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         String recipeId = UUID.randomUUID().toString();
@@ -115,6 +119,7 @@ public class RecipeManager {
         }
     }
 
+    // Fetches and constructs all recipes and their ingredients from the database
     public List<Recipe> getAllRecipes() {
         List<Recipe> recipes = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -135,6 +140,7 @@ public class RecipeManager {
         return recipes;
     }
 
+    // Fetches ingredients associated with a specific recipe ID
     private List<RecipeIngredient> getIngredientsForRecipe(String recipeId, SQLiteDatabase db) {
         List<RecipeIngredient> list = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_RECIPE_INGREDIENTS + " WHERE " + DatabaseHelper.COL_RI_RECIPE_ID + "=?", new String[]{recipeId});
@@ -150,6 +156,7 @@ public class RecipeManager {
         return list;
     }
 
+    // Returns a list of recipes that have all required ingredients in the provided pantry list
     public List<Recipe> getMatchedRecipes(List<Ingredient> pantry) {
         List<Recipe> all = getAllRecipes();
         List<Recipe> matched = new ArrayList<>();
@@ -161,6 +168,7 @@ public class RecipeManager {
         return matched;
     }
 
+    // Returns a list of recipes that are missing exactly one required ingredient from the pantry list
     public List<Recipe> getAlmostThereRecipes(List<Ingredient> pantry) {
         List<Recipe> all = getAllRecipes();
         List<Recipe> almostThere = new ArrayList<>();
@@ -172,6 +180,7 @@ public class RecipeManager {
         return almostThere;
     }
 
+    // Fetches a single fully constructed recipe by ID
     public Recipe getRecipeById(String id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_RECIPES + " WHERE " + DatabaseHelper.COL_REC_ID + "=?", new String[]{id});
@@ -187,6 +196,7 @@ public class RecipeManager {
         return null;
     }
 
+    // Evaluates if all ingredients for a recipe exist in the pantry with sufficient quantities
     private boolean canMakeRecipe(Recipe recipe, List<Ingredient> pantry) {
         for (RecipeIngredient required : recipe.getRequiredIngredients()) {
             boolean found = false;
@@ -208,6 +218,7 @@ public class RecipeManager {
         return true; 
     }
 
+    // Evaluates if exactly one ingredient for a recipe is missing or insufficient in the pantry
     private boolean isAlmostThere(Recipe recipe, List<Ingredient> pantry) {
         int missingCount = 0;
         for (RecipeIngredient required : recipe.getRequiredIngredients()) {
@@ -230,6 +241,7 @@ public class RecipeManager {
         return missingCount == 1; 
     }
 
+    // Compares quantity and handles unit conversions for requirements matching
     private boolean hasSufficientQuantity(RecipeIngredient required, Ingredient pantryItem) {
         String reqUnit = required.getUnit();
         double reqQty = required.getQuantity();

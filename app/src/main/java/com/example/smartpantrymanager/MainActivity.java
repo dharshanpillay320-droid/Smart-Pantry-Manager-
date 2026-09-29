@@ -34,12 +34,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Initialize UI components
         rvPantry = findViewById(R.id.rvPantry);
         tvEmptyPantry = findViewById(R.id.tvEmptyPantry);
         btnAddIngredient = findViewById(R.id.btnAddIngredient);
@@ -47,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         btnSettings = findViewById(R.id.btnSettings);
         spnSortIngredients = findViewById(R.id.spnSortIngredients);
 
+        // Configure RecyclerView and Adapter
         rvPantry.setLayoutManager(new LinearLayoutManager(this));
-        
         adapter = new IngredientAdapter(new java.util.ArrayList<>(), new IngredientAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Ingredient ingredient) {
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         });
         rvPantry.setAdapter(adapter);
         
+        // Configure sorting spinner
         String[] sortOptions = {"Expiring Soon", "Alphabetically"};
         android.widget.ArrayAdapter<String> sortAdapter = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sortOptions);
         spnSortIngredients.setAdapter(sortAdapter);
@@ -71,9 +74,11 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
 
+        // Setup navigation listeners
         btnAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Opens the AddEditIngredientActivity to create a new pantry item
                 Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
                 startActivity(intent);
             }
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         btnSuggestedRecipes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Opens the SuggestedRecipesActivity to view recipe matches
                 Intent intent = new Intent(MainActivity.this, SuggestedRecipesActivity.class);
                 startActivity(intent);
             }
@@ -90,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Opens the SettingsActivity to configure app preferences
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
@@ -98,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         checkExpiryWarning();
     }
 
+    // Evaluates pantry items against the current date to display an expiry warning
     private void checkExpiryWarning() {
         if (getIntent() != null && getIntent().getBooleanExtra("EXTRA_SHOW_EXPIRY_WARNING", false)) {
             getIntent().removeExtra("EXTRA_SHOW_EXPIRY_WARNING");
@@ -108,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             
             try {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                // Used to get and track realtime date and time
                 long now = new java.util.Date().getTime();
                 
                 for (Ingredient item : pantry) {
@@ -127,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
             }
             
+            // Displays the alert if items are expiring and the user has not disabled warnings
             if (!expiringSoonItems.isEmpty() || !expiredItems.isEmpty()) {
                 android.content.SharedPreferences prefs = getSharedPreferences("SmartPantryPrefs", android.content.Context.MODE_PRIVATE);
                 if (prefs.getBoolean("enable_expiry_alerts", true)) {
@@ -157,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Presents a message allowing the user to edit or delete the selected ingredient
     private void showEditDeleteDialog(Ingredient ingredient) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(ingredient.getOriginalName());
@@ -164,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
+                    // Opens the AddEditIngredientActivity to edit the currently selected pantry item
                     Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
                     intent.putExtra("EXTRA_INGREDIENT_ID", ingredient.getId());
                     startActivity(intent);
@@ -176,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
+    // Fetches the latest pantry data, applies the selected sort, and updates the RecyclerView
     private void refreshList() {
         List<Ingredient> currentList = IngredientManager.getInstance(this).getPantryList();
         

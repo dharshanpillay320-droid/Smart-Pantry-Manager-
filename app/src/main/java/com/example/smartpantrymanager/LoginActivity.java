@@ -21,6 +21,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Setup screen layout
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -29,17 +31,21 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Link UI elements
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
 
+        // Check credentials on button click
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = etUsername.getText().toString().trim();
                 String password = etPassword.getText().toString().trim();
 
+                // Move to main screen if correct, else show error
                 if (username.equals("user") && password.equals("user123")) {
+                    // Triggers navigation to the MainActivity screen upon successful login
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("EXTRA_SHOW_EXPIRY_WARNING", true);
                     startActivity(intent);

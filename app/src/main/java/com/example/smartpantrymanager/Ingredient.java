@@ -8,6 +8,7 @@ public class Ingredient {
     private String unit;
     private String expiryDate;
 
+    // Initializes a new pantry ingredient record
     public Ingredient(String id, String originalName, String normalizedName, double quantity, String unit, String expiryDate) {
         this.id = id;
         this.originalName = originalName;
@@ -17,6 +18,7 @@ public class Ingredient {
         this.expiryDate = expiryDate;
     }
 
+    // getters and setters for ingredient properties
     public String getId() { return id; }
     public String getOriginalName() { return originalName; }
     public String getNormalizedName() { return normalizedName; }

@@ -21,6 +21,8 @@ public class RecipeDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Setup screen layout
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_recipe_detail);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -29,11 +31,13 @@ public class RecipeDetailActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Link UI elements
         tvRecipeDetailName = findViewById(R.id.tvRecipeDetailName);
         tvRecipeDetailIngredients = findViewById(R.id.tvRecipeDetailIngredients);
         tvRecipeDetailSteps = findViewById(R.id.tvRecipeDetailSteps);
         btnBackFromDetail = findViewById(R.id.btnBackFromDetail);
 
+        // Fetch and display recipe details
         if (getIntent() != null && getIntent().hasExtra("EXTRA_RECIPE_ID")) {
             String recipeId = getIntent().getStringExtra("EXTRA_RECIPE_ID");
             Recipe recipe = RecipeManager.getInstance(this).getRecipeById(recipeId);
@@ -42,6 +46,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 tvRecipeDetailName.setText(recipe.getTitle());
                 tvRecipeDetailSteps.setText(recipe.getInstructions());
                 
+                // Format ingredients list
                 StringBuilder ingredientsBuilder = new StringBuilder();
                 for (RecipeIngredient ri : recipe.getRequiredIngredients()) {
                     
@@ -62,6 +67,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
             }
         }
 
+        // Handle back navigation
         btnBackFromDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -6,9 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
+    // Database configuration constants
     private static final String DATABASE_NAME = "SmartPantry.db";
     private static final int DATABASE_VERSION = 1;
 
+    // Ingredients table schema definition
     public static final String TABLE_INGREDIENTS = "ingredients";
     public static final String COL_ING_ID = "id";
     public static final String COL_ING_ORIGINAL_NAME = "originalName";
@@ -17,24 +19,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_ING_UNIT = "unit";
     public static final String COL_ING_EXPIRY = "expiryDate";
 
+    // Recipes table schema definition
     public static final String TABLE_RECIPES = "recipes";
     public static final String COL_REC_ID = "id";
     public static final String COL_REC_TITLE = "title";
     public static final String COL_REC_DESC = "description";
     public static final String COL_REC_INSTRUCTIONS = "instructions";
 
+    // Relational table schema linking ingredients to specific recipes
     public static final String TABLE_RECIPE_INGREDIENTS = "recipe_ingredients";
     public static final String COL_RI_RECIPE_ID = "recipe_id";
     public static final String COL_RI_NAME = "name";
     public static final String COL_RI_QUANTITY = "quantity";
     public static final String COL_RI_UNIT = "unit";
 
+    // Connects the application to the local SQLite database file
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    // Creates the SQLite database file on the device and initializes the tables
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Constructs and executes the SQL command for the ingredients table
         String createIngredientsTable = "CREATE TABLE " + TABLE_INGREDIENTS + " ("
                 + COL_ING_ID + " TEXT PRIMARY KEY, "
                 + COL_ING_ORIGINAL_NAME + " TEXT, "
@@ -44,6 +51,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_ING_EXPIRY + " TEXT)";
         db.execSQL(createIngredientsTable);
 
+        // Constructs and executes the SQL command for the recipes table
         String createRecipesTable = "CREATE TABLE " + TABLE_RECIPES + " ("
                 + COL_REC_ID + " TEXT PRIMARY KEY, "
                 + COL_REC_TITLE + " TEXT, "
@@ -51,6 +59,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COL_REC_INSTRUCTIONS + " TEXT)";
         db.execSQL(createRecipesTable);
 
+        // Constructs and executes the SQL command for the recipe ingredients table
         String createRecipeIngredientsTable = "CREATE TABLE " + TABLE_RECIPE_INGREDIENTS + " ("
                 + COL_RI_RECIPE_ID + " TEXT, "
                 + COL_RI_NAME + " TEXT, "

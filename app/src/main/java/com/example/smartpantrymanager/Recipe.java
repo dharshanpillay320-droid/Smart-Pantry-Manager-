@@ -9,6 +9,7 @@ public class Recipe {
     private List<RecipeIngredient> requiredIngredients;
     private String instructions;
 
+    // Initializes a new recipe object
     public Recipe(String id, String title, String description, List<RecipeIngredient> requiredIngredients, String instructions) {
         this.id = id;
         this.title = title;
@@ -17,6 +18,7 @@ public class Recipe {
         this.instructions = instructions;
     }
 
+    // getters for recipe properties
     public String getId() { return id; }
     public String getTitle() { return title; }
     public String getDescription() { return description; }

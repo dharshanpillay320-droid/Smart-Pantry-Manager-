@@ -35,6 +35,8 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Setup screen layout
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add_edit_ingredient);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -43,6 +45,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Link UI elements
         etIngredientName = findViewById(R.id.etIngredientName);
         etIngredientQuantity = findViewById(R.id.etIngredientQuantity);
         spnIngredientUnit = findViewById(R.id.spnIngredientUnit);
@@ -52,6 +55,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         tvAddEditTitle = findViewById(R.id.tvAddEditTitle);
 
+        // Pre-fill form if editing an existing ingredient
         if (getIntent() != null && getIntent().hasExtra("EXTRA_INGREDIENT_ID")) {
             editingId = getIntent().getStringExtra("EXTRA_INGREDIENT_ID");
             Ingredient ingredient = IngredientManager.getInstance(this).getIngredientById(editingId);
@@ -79,9 +83,11 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         }
 
+        // Handle date picker dialog
         btnPickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Used to get and track realtime date and time
                 final Calendar c = Calendar.getInstance();
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
@@ -99,6 +105,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         });
 
+        // Cancel action
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +113,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         });
 
+        // Validate and save ingredient input
         btnSaveIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
