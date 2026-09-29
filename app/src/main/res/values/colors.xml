@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     
     <color name="recipe_button_color">#2196F3</color> <!-- Blue for Light Mode -->
+    <color name="settings_button_color">#4CAF50</color> <!-- Green for Settings -->
     <color name="background_color">#FFFFFFFF</color>
     <color name="text_color">#FF000000</color>
     <color name="secondary_color">#FFBB86FC</color> <!-- Default Purple Secondary -->

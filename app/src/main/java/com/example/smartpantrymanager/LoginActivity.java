@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (username.equals("user") && password.equals("user123")) {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("EXTRA_SHOW_EXPIRY_WARNING", true);
                     startActivity(intent);
                     finish();
                 } else {

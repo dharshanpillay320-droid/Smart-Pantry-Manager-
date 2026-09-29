@@ -32,9 +32,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         btnBack = findViewById(R.id.btnBack);
         switchDarkMode = findViewById(R.id.switchDarkMode);
+        Switch switchExpiryAlerts = findViewById(R.id.switchExpiryAlerts);
 
         int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         switchDarkMode.setChecked(currentNightMode == Configuration.UI_MODE_NIGHT_YES);
+
+        android.content.SharedPreferences prefs = getSharedPreferences("SmartPantryPrefs", android.content.Context.MODE_PRIVATE);
+        boolean isAlertsEnabled = prefs.getBoolean("enable_expiry_alerts", true);
+        switchExpiryAlerts.setChecked(isAlertsEnabled);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +56,15 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 }
+            }
+        });
+
+        switchExpiryAlerts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                android.content.SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("enable_expiry_alerts", isChecked);
+                editor.apply();
             }
         });
     }

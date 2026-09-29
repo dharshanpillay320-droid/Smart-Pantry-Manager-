@@ -78,6 +78,67 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        checkExpiryWarning();
+    }
+
+    private void checkExpiryWarning() {
+        if (getIntent() != null && getIntent().getBooleanExtra("EXTRA_SHOW_EXPIRY_WARNING", false)) {
+            getIntent().removeExtra("EXTRA_SHOW_EXPIRY_WARNING");
+            
+            List<Ingredient> pantry = IngredientManager.getInstance(this).getPantryList();
+            java.util.List<String> expiringSoonItems = new java.util.ArrayList<>();
+            java.util.List<String> expiredItems = new java.util.ArrayList<>();
+            
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                long now = new java.util.Date().getTime();
+                
+                for (Ingredient item : pantry) {
+                    String exp = item.getExpiryDate();
+                    if (exp != null && !exp.trim().isEmpty()) {
+                        java.util.Date expDate = sdf.parse(exp);
+                        long diffInMillies = expDate.getTime() - now;
+                        long diffInDays = java.util.concurrent.TimeUnit.DAYS.convert(diffInMillies, java.util.concurrent.TimeUnit.MILLISECONDS);
+                        
+                        if (diffInDays >= 0 && diffInDays <= 1) {
+                            expiringSoonItems.add(item.getOriginalName());
+                        } else if (diffInDays < 0) {
+                            expiredItems.add(item.getOriginalName());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+            }
+            
+            if (!expiringSoonItems.isEmpty() || !expiredItems.isEmpty()) {
+                android.content.SharedPreferences prefs = getSharedPreferences("SmartPantryPrefs", android.content.Context.MODE_PRIVATE);
+                if (prefs.getBoolean("enable_expiry_alerts", true)) {
+                    StringBuilder sb = new StringBuilder();
+                    
+                    if (!expiringSoonItems.isEmpty()) {
+                        sb.append("Expiring today or tomorrow:\n");
+                        for (String name : expiringSoonItems) {
+                            sb.append("- ").append(name).append("\n");
+                        }
+                    }
+                    
+                    if (!expiredItems.isEmpty()) {
+                        if (sb.length() > 0) sb.append("\n");
+                        sb.append("Already expired:\n");
+                        for (String name : expiredItems) {
+                            sb.append("- ").append(name).append("\n");
+                        }
+                    }
+                    
+                    new AlertDialog.Builder(this)
+                        .setTitle("Expiry Alert!")
+                        .setMessage(sb.toString().trim())
+                        .setPositiveButton("Got it", null)
+                        .show();
+                }
+            }
+        }
     }
 
     private void showEditDeleteDialog(Ingredient ingredient) {
