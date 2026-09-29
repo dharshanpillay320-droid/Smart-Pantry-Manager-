@@ -25,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnAddIngredient;
     private Button btnSuggestedRecipes;
     private Button btnSettings;
+    private android.widget.Spinner spnSortIngredients;
     private IngredientAdapter adapter;
+    private int currentSortPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,17 +45,31 @@ public class MainActivity extends AppCompatActivity {
         btnAddIngredient = findViewById(R.id.btnAddIngredient);
         btnSuggestedRecipes = findViewById(R.id.btnSuggestedRecipes);
         btnSettings = findViewById(R.id.btnSettings);
+        spnSortIngredients = findViewById(R.id.spnSortIngredients);
 
         rvPantry.setLayoutManager(new LinearLayoutManager(this));
         
-        List<Ingredient> currentList = IngredientManager.getInstance(this).getPantryList();
-        adapter = new IngredientAdapter(currentList, new IngredientAdapter.OnItemClickListener() {
+        adapter = new IngredientAdapter(new java.util.ArrayList<>(), new IngredientAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Ingredient ingredient) {
                 showEditDeleteDialog(ingredient);
             }
         });
         rvPantry.setAdapter(adapter);
+        
+        String[] sortOptions = {"Expiring Soon", "Alphabetically"};
+        android.widget.ArrayAdapter<String> sortAdapter = new android.widget.ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, sortOptions);
+        spnSortIngredients.setAdapter(sortAdapter);
+
+        spnSortIngredients.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                currentSortPosition = position;
+                refreshList();
+            }
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+        });
 
         btnAddIngredient.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,17 +169,46 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 } else if (which == 1) {
                     IngredientManager.getInstance(MainActivity.this).deleteIngredient(ingredient.getId());
-                    onResume();
+                    refreshList();
                 }
             }
         });
         builder.show();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void refreshList() {
         List<Ingredient> currentList = IngredientManager.getInstance(this).getPantryList();
+        
+        if (currentSortPosition == 1) {
+            currentList.sort(new java.util.Comparator<Ingredient>() {
+                @Override
+                public int compare(Ingredient o1, Ingredient o2) {
+                    return o1.getOriginalName().compareToIgnoreCase(o2.getOriginalName());
+                }
+            });
+        } else if (currentSortPosition == 0) {
+            currentList.sort(new java.util.Comparator<Ingredient>() {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                @Override
+                public int compare(Ingredient o1, Ingredient o2) {
+                    String exp1 = o1.getExpiryDate();
+                    String exp2 = o2.getExpiryDate();
+                    boolean empty1 = exp1 == null || exp1.trim().isEmpty();
+                    boolean empty2 = exp2 == null || exp2.trim().isEmpty();
+                    if (empty1 && empty2) return 0;
+                    if (empty1) return 1;
+                    if (empty2) return -1;
+                    try {
+                        java.util.Date d1 = sdf.parse(exp1);
+                        java.util.Date d2 = sdf.parse(exp2);
+                        return d1.compareTo(d2);
+                    } catch (Exception e) {
+                        return 0;
+                    }
+                }
+            });
+        }
+        
         adapter.updateData(currentList);
         
         if (currentList.isEmpty()) {
@@ -173,5 +218,11 @@ public class MainActivity extends AppCompatActivity {
             tvEmptyPantry.setVisibility(View.GONE);
             rvPantry.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshList();
     }
 }
